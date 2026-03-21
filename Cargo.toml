@@ -1,0 +1,10 @@
+[package]
+name = "sakura"
+version = "0.0.0"
+authors = ["Yau-ming Leung <ymleung314@gmail.com>"]
+edition = "2024"
+readme = "README.md"
+repository = "https://github.com/ymleung314/sakura"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
