@@ -8,3 +8,6 @@ repository = "https://github.com/ymleung314/sakura"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
+bytemuck = { version = "1.25", features = ["must_cast"] }
+libc = "0.2"
+thiserror = "2"
