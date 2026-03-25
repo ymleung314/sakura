@@ -32,13 +32,13 @@ pub struct Utun {
 
 #[derive(thiserror::Error, Debug)]
 pub enum NewUtunError {
-    #[error("cannot create KEXT control socket")]
+    #[error("cannot create KEXT control socket: {0}")]
     CreateSocket(io::Error),
-    #[error("cannot set control target to utun for KEXT control socket")]
+    #[error("cannot set control target to utun for KEXT control socket: {0}")]
     SocketUtunControl(io::Error),
-    #[error("cannot connect to KEXT control socket")]
+    #[error("cannot connect to KEXT control socket: {0}")]
     Connect(io::Error),
-    #[error("cannot get utun interface name")]
+    #[error("cannot get utun interface name: {0}")]
     GetName(io::Error),
 }
 
