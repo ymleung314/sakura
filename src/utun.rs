@@ -237,7 +237,7 @@ impl FromRawFd for Utun {
     ///
     /// The file descriptor MUST be opened and valid.
     unsafe fn from_raw_fd(fd: RawFd) -> Self {
-        unsafe { Self::from_raw_fd_checked(fd).unwrap() }
+        unsafe { Self::from_raw_fd_checked(fd).expect("cannot get utun interface name") }
     }
 }
 
