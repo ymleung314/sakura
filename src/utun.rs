@@ -94,7 +94,7 @@ impl Utun {
         if unsafe {
             libc::connect(
                 fd,
-                &addr as *const libc::sockaddr_ctl as *const libc::sockaddr,
+                (&addr as *const libc::sockaddr_ctl).cast::<libc::sockaddr>(),
                 mem::size_of::<libc::sockaddr_ctl>() as libc::socklen_t,
             )
         } < 0
@@ -110,7 +110,7 @@ impl Utun {
                 fd,
                 libc::SYSPROTO_CONTROL,
                 libc::UTUN_OPT_IFNAME,
-                ifname_buf.as_mut_ptr() as *mut libc::c_void,
+                ifname_buf.as_mut_ptr().cast::<libc::c_void>(),
                 &mut ifname_len,
             )
         } < 0
@@ -141,7 +141,7 @@ impl Utun {
                 fd,
                 libc::SYSPROTO_CONTROL,
                 libc::UTUN_OPT_IFNAME,
-                ifname_buf.as_mut_ptr() as *mut libc::c_void,
+                ifname_buf.as_mut_ptr().cast::<libc::c_void>(),
                 &mut ifname_len,
             )
         } == 0
@@ -170,16 +170,16 @@ impl Utun {
 
         let iov = [
             libc::iovec {
-                iov_base: af_nl_bytes.as_mut_ptr() as *mut libc::c_void,
+                iov_base: af_nl_bytes.as_mut_ptr().cast::<libc::c_void>(),
                 iov_len: af_nl_bytes.len(),
             },
             libc::iovec {
-                iov_base: buf.as_mut_ptr() as *mut libc::c_void,
+                iov_base: buf.as_mut_ptr().cast::<libc::c_void>(),
                 iov_len: buf.len(),
             },
         ];
 
-        let n = unsafe { libc::readv(self.fd.as_raw_fd(), iov.as_ptr(), iov.len() as i32) };
+        let n = unsafe { libc::readv(self.fd.as_raw_fd(), iov.as_ptr(), iov.len() as libc::c_int) };
         if n < 0 {
             return Err(io::Error::last_os_error());
         }
@@ -196,17 +196,18 @@ impl Utun {
         let iov = [
             libc::iovec {
                 // SAFETY: `writev` does not modify buffers, this is safe.
-                iov_base: af_nl_bytes.as_ptr() as *mut libc::c_void,
+                iov_base: af_nl_bytes.as_ptr().cast_mut().cast::<libc::c_void>(),
                 iov_len: af_nl_bytes.len(),
             },
             libc::iovec {
                 // SAFETY: `writev` does not modify buffers, this is safe.
-                iov_base: buf.as_ptr() as *mut libc::c_void,
+                iov_base: buf.as_ptr().cast_mut().cast::<libc::c_void>(),
                 iov_len: buf.len(),
             },
         ];
 
-        let n = unsafe { libc::writev(self.fd.as_raw_fd(), iov.as_ptr(), iov.len() as i32) };
+        let n =
+            unsafe { libc::writev(self.fd.as_raw_fd(), iov.as_ptr(), iov.len() as libc::c_int) };
         if n < 0 {
             return Err(io::Error::last_os_error());
         }
